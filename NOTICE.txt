@@ -1,3 +1,7 @@
 This product includes software from Google (Apache 2.0)
   * Copyright 2008 Google Inc.
   * https://github.com/google/gson
+
+This product includes software from The Apache Software Foundation (Apache 2.0)
+  * Copyright 2002-2026 The Apache Software Foundation
+  * https://www.apache.org/
