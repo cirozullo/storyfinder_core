@@ -14,6 +14,11 @@ public class AvvioGioco {
         String argomento = scanner.nextLine();
         GestoreStoria gestoreStoria = new GestoreStoria();
         Storia storia = gestoreStoria.getBestStory(argomento);
-        System.out.println(storia);
+        String testo = storia.getTesto_storia();
+        String storiaFinale = testo
+            .replace("[nome]", nome)
+            .replace("[luogo]", luogo);
+        System.out.println(storiaFinale);
+        scanner.close();
     }
 }
