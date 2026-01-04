@@ -7,12 +7,13 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.*;
 
 public class GestoreStoria {
 
-    private List<Storia> allStories;
+    private final List<Storia> allStories;
 
     public GestoreStoria() {
         this.allStories = this.loadAllStories();
@@ -30,10 +31,12 @@ public class GestoreStoria {
         ClassLoader classLoader =
             Thread.currentThread().getContextClassLoader();
 
-        File dir = new File(classLoader.getResource("storie").getFile());
+        File dir = new File(
+            Objects.requireNonNull(classLoader.getResource("storie")).getFile()
+        );
 
         if (dir.isDirectory()) {
-            File[] files = dir.listFiles((d, name) -> name.endsWith(".json"));
+            File[] files = dir.listFiles((_, name) -> name.endsWith(".json"));
             if (files != null) {
                 for (File file : files) {
                     Storia story = loadStoryFromFile(file);
@@ -66,10 +69,11 @@ public class GestoreStoria {
             return null;
         }
 
-        String result = null;
+        String result;
         try (InputStream inputStream = is) {
             result = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
         } catch (IOException e) {
+            //noinspection CallToPrintStackTrace
             e.printStackTrace();
             return null;
         }
@@ -115,7 +119,7 @@ public class GestoreStoria {
             }
         }
 
-        if (bestStory == null || minDistance == Integer.MAX_VALUE) {
+        if (bestStory == null) {
             System.out.println(
                 "Nessuna storia trovata per l'argomento: " + topicKey
             );

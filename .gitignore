@@ -1,3 +1,6 @@
 .zed
 bin
 storyfinder_core.jar
+out/
+*.iml
+.idea
