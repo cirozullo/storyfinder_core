@@ -1,9 +1,10 @@
 package com.storyfinder;
 
 import com.google.gson.Gson;
-import java.io.FileReader;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.*;
@@ -36,7 +37,7 @@ public class GestoreStoria {
         Storia story;
 
         for (String fileName : NOMI_STORIE) {
-            String filePath = "resources/" + fileName;
+            String filePath = "/" + fileName;
             story = this.loadStoryFromFile(filePath, gson);
             if (story != null) {
                 stories.add(story);
@@ -55,7 +56,12 @@ public class GestoreStoria {
      */
     private Storia loadStoryFromFile(String filePath, Gson gson) {
         Storia storia = null;
-        try (Reader reader = new FileReader(filePath)) {
+        try (
+            InputStream in = getClass().getResourceAsStream(filePath);
+            BufferedReader reader = new BufferedReader(
+                new InputStreamReader(in)
+            )
+        ) {
             storia = gson.fromJson(reader, Storia.class);
         } catch (IOException e) {
             System.err.println(
