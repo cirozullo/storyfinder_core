@@ -1,19 +1,24 @@
 package com.storyfinder;
 
 import com.google.gson.Gson;
-import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.*;
 
 public class GestoreStoria {
 
     private final List<Storia> allStories;
+
+    private static final String[] NOMI_STORIE = {
+        "il_labirinto_del_drago.json",
+        "il_mistero_della_foresta_incantata.json",
+        "il_tesoro_di_atlantide.json",
+        "la_citta_sommersa.json",
+        "la_leggenda_del_cavaliere_perduto.json",
+    };
 
     public GestoreStoria() {
         this.allStories = this.loadAllStories();
@@ -27,23 +32,14 @@ public class GestoreStoria {
      */
     private List<Storia> loadAllStories() {
         List<Storia> stories = new ArrayList<>();
+        Gson gson = new Gson();
+        Storia story;
 
-        ClassLoader classLoader =
-            Thread.currentThread().getContextClassLoader();
-
-        File dir = new File(
-            Objects.requireNonNull(classLoader.getResource("storie")).getFile()
-        );
-
-        if (dir.isDirectory()) {
-            File[] files = dir.listFiles((_, name) -> name.endsWith(".json"));
-            if (files != null) {
-                for (File file : files) {
-                    Storia story = loadStoryFromFile(file);
-                    if (story != null) {
-                        stories.add(story);
-                    }
-                }
+        for (String fileName : NOMI_STORIE) {
+            String filePath = "resources/" + fileName;
+            story = this.loadStoryFromFile(filePath, gson);
+            if (story != null) {
+                stories.add(story);
             }
         }
 
@@ -57,29 +53,16 @@ public class GestoreStoria {
      *  @param file Il nome del file della storia da caricare
      *  @return Il file JSON in formato stringa
      */
-    private Storia loadStoryFromFile(File file) {
-        ClassLoader classLoader =
-            Thread.currentThread().getContextClassLoader();
-        InputStream is = classLoader.getResourceAsStream(
-            "storie/" + file.getName()
-        );
-
-        if (is == null) {
-            System.err.println("File not found: " + file.getName());
-            return null;
-        }
-
-        String result;
-        try (InputStream inputStream = is) {
-            result = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+    private Storia loadStoryFromFile(String filePath, Gson gson) {
+        Storia storia = null;
+        try (Reader reader = new FileReader(filePath)) {
+            storia = gson.fromJson(reader, Storia.class);
         } catch (IOException e) {
-            //noinspection CallToPrintStackTrace
-            e.printStackTrace();
-            return null;
+            System.err.println(
+                "Errore nel caricamento del file JSON : " + e.getMessage()
+            );
         }
-
-        Gson gson = new Gson();
-        return gson.fromJson(result, Storia.class);
+        return storia;
     }
 
     /**
